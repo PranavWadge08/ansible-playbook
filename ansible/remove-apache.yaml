@@ -1,0 +1,25 @@
+---
+- name: remove Apache on Ubuntu
+  hosts: webserver
+  become: yes
+  
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+    
+    - name: remove Apache
+      apt:
+        name: apache2
+        state: absent
+    
+    - name: Stop Apache service
+      service:
+        name: apache2
+        state: stopped
+        enabled: no
+    
+    - name: Remove unused dependencies
+      apt:
+        autoremove: yes
+        purge: yes
