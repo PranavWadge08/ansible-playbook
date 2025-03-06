@@ -1,0 +1,52 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Stop Docker service
+      service:
+        name: docker
+        state: stopped
+        enabled: no
+    
+    - name: Remove Docker packages
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: absent
+    
+    - name: Purge Docker packages
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: absent
+        autoremove: yes
+        autoclean: yes
+        purge: yes
+    
+    - name: Remove Docker directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/lib/docker
+        - /etc/docker
+        - /var/run/docker.sock
+        - /usr/local/bin/docker-compose
+    
+    - name: Remove Docker group
+      group:
+        name: docker
+        state: absent
+    
+    - name: Clean apt cache
+      apt:
+        autoremove: yes
+        autoclean: yes
